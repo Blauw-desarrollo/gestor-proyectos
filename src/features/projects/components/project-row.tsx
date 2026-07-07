@@ -39,12 +39,12 @@ export function ProjectRow({
               defaultValue={project.name}
               required
               autoFocus
-              className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+              className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-full bg-brand px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
             >
               Guardar
             </button>

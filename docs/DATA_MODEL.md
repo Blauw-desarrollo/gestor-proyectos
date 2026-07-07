@@ -50,6 +50,18 @@ Horas reales. Múltiples entradas por tarea y usuario.
 | created_at | timestamptz | |
 | deleted_at | timestamptz null | soft delete |
 
+### active_timers
+Cronómetro en tiempo real. Como mucho una fila por usuario (constraint
+`unique` en `user_clerk_id`): un usuario solo puede tener un cronómetro
+corriendo a la vez. Al pararlo, la app crea la fila correspondiente en
+`time_entries` y borra el timer.
+| campo | tipo | notas |
+|---|---|---|
+| id | uuid pk | |
+| task_id | uuid fk → tasks | |
+| user_clerk_id | text unique not null | |
+| started_at | timestamptz not null | default now() |
+
 ## Vistas
 
 ### task_hours_summary
@@ -60,6 +72,7 @@ Base para el informe de desviación por proyecto.
 - **members**: cada usuario lee su propia fila; admin lee todas. Escritura solo admin.
 - **projects / tasks**: lectura para todo member; escritura solo admin (fase 1).
 - **time_entries**: dev crea/edita/borra (soft) SOLO sus entradas; admin lee todas.
+- **active_timers**: cada usuario gestiona (insert/delete) SOLO su propio timer; admin lee todos.
 
 ## Decisiones
 - `estimated_hours` vive en `tasks` (se estima una vez); las horas reales son

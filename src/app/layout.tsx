@@ -45,10 +45,10 @@ export default function RootLayout({
           colorInput: "#ffffff",
           colorInputForeground: "#231f20",
           fontFamily: "var(--font-nunito)",
-          borderRadius: "0.9rem",
+          borderRadius: "0.5rem",
         },
         elements: {
-          formButtonPrimary: { borderRadius: "9999px" },
+          formButtonPrimary: { borderRadius: "0.5rem" },
         },
       }}
     >

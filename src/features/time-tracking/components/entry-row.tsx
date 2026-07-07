@@ -51,7 +51,7 @@ export function EntryRow({
               name="task_id"
               defaultValue={entry.task_id}
               required
-              className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+              className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
             >
               {selectableTasks.map((task) => (
                 <option key={task.id} value={task.id}>
@@ -67,7 +67,7 @@ export function EntryRow({
               step="0.5"
               defaultValue={entry.hours}
               required
-              className="w-24 rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+              className="w-24 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
             />
             <input
               name="entry_date"
@@ -75,18 +75,18 @@ export function EntryRow({
               defaultValue={entry.entry_date}
               max={today}
               required
-              className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+              className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
             />
             <input
               name="notes"
               defaultValue={entry.notes ?? ""}
               placeholder="Notas"
-              className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+              className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded-md bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
             >
               Guardar
             </button>

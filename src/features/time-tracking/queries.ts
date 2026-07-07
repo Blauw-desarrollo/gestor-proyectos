@@ -40,6 +40,21 @@ export async function getMyAssignableTasks() {
   return data;
 }
 
+export async function getActiveTimer() {
+  const { userId } = await auth();
+  if (!userId) return null;
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("active_timers")
+    .select("id, task_id, started_at, task:tasks(title)")
+    .eq("user_clerk_id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getEntriesGroupedByTask(
   taskIds: string[]
 ): Promise<Record<string, TaskTimeEntry[]>> {

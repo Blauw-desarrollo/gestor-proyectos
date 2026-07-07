@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toISODate } from "./date";
 
 type ActionResult = { error?: string };
+type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 const entrySchema = z.object({
   task_id: z.string().trim().min(1, "Selecciona una tarea"),
@@ -91,6 +92,88 @@ export async function updateTimeEntry(
   }
 
   revalidatePath("/horas");
+  return {};
+}
+
+async function logElapsedAndDelete(
+  supabase: SupabaseServerClient,
+  timer: { id: string; task_id: string; started_at: string },
+  userId: string
+): Promise<ActionResult> {
+  const elapsedMs = Date.now() - new Date(timer.started_at).getTime();
+  const hours = Math.max(0.01, Math.round((elapsedMs / 3_600_000) * 100) / 100);
+
+  const { error: insertError } = await supabase.from("time_entries").insert({
+    task_id: timer.task_id,
+    user_clerk_id: userId,
+    hours,
+    entry_date: toISODate(new Date()),
+    notes: "Cronómetro",
+  });
+  if (insertError) return { error: insertError.message };
+
+  const { error: deleteError } = await supabase
+    .from("active_timers")
+    .delete()
+    .eq("id", timer.id);
+  if (deleteError) return { error: deleteError.message };
+
+  return {};
+}
+
+export async function startTimer(
+  taskId: string,
+  projectId?: string
+): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { error: "No hay usuario autenticado" };
+
+  const supabase = await createSupabaseServerClient();
+
+  const { data: existing, error: existingError } = await supabase
+    .from("active_timers")
+    .select("id, task_id, started_at")
+    .eq("user_clerk_id", userId)
+    .maybeSingle();
+
+  if (existingError) return { error: existingError.message };
+
+  if (existing) {
+    if (existing.task_id === taskId) return {};
+    const stopResult = await logElapsedAndDelete(supabase, existing, userId);
+    if (stopResult.error) return stopResult;
+  }
+
+  const { error } = await supabase
+    .from("active_timers")
+    .insert({ task_id: taskId, user_clerk_id: userId });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/horas");
+  if (projectId) revalidatePath(`/proyectos/${projectId}`);
+  return {};
+}
+
+export async function stopTimer(projectId?: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { error: "No hay usuario autenticado" };
+
+  const supabase = await createSupabaseServerClient();
+  const { data: existing, error: existingError } = await supabase
+    .from("active_timers")
+    .select("id, task_id, started_at")
+    .eq("user_clerk_id", userId)
+    .maybeSingle();
+
+  if (existingError) return { error: existingError.message };
+  if (!existing) return { error: "No hay ningún cronómetro en marcha" };
+
+  const result = await logElapsedAndDelete(supabase, existing, userId);
+  if (result.error) return result;
+
+  revalidatePath("/horas");
+  if (projectId) revalidatePath(`/proyectos/${projectId}`);
   return {};
 }
 

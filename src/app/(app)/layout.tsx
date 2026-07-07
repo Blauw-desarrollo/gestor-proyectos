@@ -8,25 +8,28 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await getCurrentMember();
+  const member = await getCurrentMember();
 
   return (
     <div className="flex min-h-full flex-1 bg-background">
-      <aside className="flex w-56 flex-col gap-8 border-r border-border bg-surface px-4 py-6">
-        <Image
-          src="/brand/blauw-labs-logo.svg"
-          alt="Blauw Labs"
-          width={140}
-          height={36}
-        />
-        <NavLinks />
-      </aside>
-      <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-end border-b border-border bg-surface px-6 py-3">
+      <aside className="flex w-56 flex-col justify-between border-r border-border bg-surface px-4 py-6">
+        <div className="flex flex-col gap-8">
+          <Image
+            src="/brand/blauw-labs-logo.svg"
+            alt="Blauw Labs"
+            width={140}
+            height={36}
+          />
+          <NavLinks />
+        </div>
+        <div className="flex items-center gap-2 border-t border-border pt-4">
           <UserButton />
-        </header>
-        <main className="flex-1 px-6 py-8">{children}</main>
-      </div>
+          <span className="truncate text-sm text-foreground/70">
+            {member.display_name ?? "Mi cuenta"}
+          </span>
+        </div>
+      </aside>
+      <main className="flex-1 px-6 py-8">{children}</main>
     </div>
   );
 }

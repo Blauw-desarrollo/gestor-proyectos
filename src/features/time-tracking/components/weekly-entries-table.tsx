@@ -19,7 +19,7 @@ export function WeeklyEntriesTable({
   }
 
   return (
-    <table className="w-full overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+    <table className="w-full overflow-hidden rounded-lg border border-border bg-surface">
       <thead>
         <tr className="border-b border-border text-left text-xs uppercase text-foreground/60">
           <th className="px-4 py-2 font-medium">Fecha</th>

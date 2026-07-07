@@ -10,7 +10,11 @@ import {
   type TaskWithHours,
 } from "../types";
 import { TaskEntriesPanel } from "@/features/time-tracking/components/task-entries-panel";
-import type { TaskTimeEntry } from "@/features/time-tracking/types";
+import { TimerControl } from "@/features/time-tracking/components/timer-control";
+import type {
+  ActiveTimer,
+  TaskTimeEntry,
+} from "@/features/time-tracking/types";
 
 export function TaskRow({
   task,
@@ -18,19 +22,23 @@ export function TaskRow({
   members,
   isAdmin,
   entries,
+  currentUserId,
+  activeTimer,
 }: {
   task: TaskWithHours;
   projectId: string;
   members: Member[];
   isAdmin: boolean;
   entries: TaskTimeEntry[];
+  currentUserId: string | null;
+  activeTimer: ActiveTimer;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const columnCount = isAdmin ? 7 : 6;
+  const columnCount = isAdmin ? 8 : 7;
 
   if (isEditing) {
     return (
@@ -48,7 +56,7 @@ export function TaskRow({
                 }
               });
             }}
-            className="flex flex-wrap items-start gap-2"
+            className="flex flex-wrap items-end gap-2"
           >
             <TaskFormFields
               members={members}
@@ -62,7 +70,7 @@ export function TaskRow({
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded-md bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
             >
               Guardar
             </button>
@@ -113,6 +121,17 @@ export function TaskRow({
         }`}
       >
         {task.deviation_hours}
+      </td>
+      <td className="px-4 py-2 text-sm">
+        {task.assignee_clerk_id === currentUserId ? (
+          <TimerControl
+            taskId={task.id}
+            projectId={projectId}
+            activeTimer={activeTimer}
+          />
+        ) : (
+          <span className="text-foreground/40">—</span>
+        )}
       </td>
       {isAdmin && (
         <td className="px-4 py-2 text-right text-sm">

@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { getProjectById } from "@/features/projects/queries";
 import { getProjectTasks, getMembers } from "@/features/tasks/queries";
-import { getEntriesGroupedByTask } from "@/features/time-tracking/queries";
+import {
+  getEntriesGroupedByTask,
+  getActiveTimer,
+} from "@/features/time-tracking/queries";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
 import { NewTaskForm } from "@/features/tasks/components/new-task-form";
 import { isAdmin } from "@/lib/auth/roles";
@@ -16,10 +20,12 @@ export default async function ProyectoDetallePage({
   const project = await getProjectById(projectId);
   if (!project) notFound();
 
-  const [tasks, admin, members] = await Promise.all([
+  const [tasks, admin, members, { userId }, activeTimer] = await Promise.all([
     getProjectTasks(projectId),
     isAdmin(),
     getMembers(),
+    auth(),
+    getActiveTimer(),
   ]);
 
   const entriesByTask = admin
@@ -48,6 +54,8 @@ export default async function ProyectoDetallePage({
         members={members}
         isAdmin={admin}
         entriesByTask={entriesByTask}
+        currentUserId={userId}
+        activeTimer={activeTimer}
       />
     </div>
   );

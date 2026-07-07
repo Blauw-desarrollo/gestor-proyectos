@@ -1,6 +1,6 @@
 import { TaskRow } from "./task-row";
 import type { Member, TaskWithHours } from "../types";
-import type { TaskTimeEntry } from "@/features/time-tracking/types";
+import type { ActiveTimer, TaskTimeEntry } from "@/features/time-tracking/types";
 
 export function TasksTable({
   tasks,
@@ -8,12 +8,16 @@ export function TasksTable({
   members,
   isAdmin,
   entriesByTask,
+  currentUserId,
+  activeTimer,
 }: {
   tasks: TaskWithHours[];
   projectId: string;
   members: Member[];
   isAdmin: boolean;
   entriesByTask: Record<string, TaskTimeEntry[]>;
+  currentUserId: string | null;
+  activeTimer: ActiveTimer;
 }) {
   if (tasks.length === 0) {
     return (
@@ -24,7 +28,7 @@ export function TasksTable({
   }
 
   return (
-    <table className="w-full overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+    <table className="w-full overflow-hidden rounded-lg border border-border bg-surface">
       <thead>
         <tr className="border-b border-border text-left text-xs uppercase text-foreground/60">
           <th className="px-4 py-2 font-medium">Título</th>
@@ -33,6 +37,7 @@ export function TasksTable({
           <th className="px-4 py-2 font-medium">Estimadas</th>
           <th className="px-4 py-2 font-medium">Reales</th>
           <th className="px-4 py-2 font-medium">Desviación</th>
+          <th className="px-4 py-2 font-medium">Cronómetro</th>
           {isAdmin && <th className="px-4 py-2" />}
         </tr>
       </thead>
@@ -45,6 +50,8 @@ export function TasksTable({
             members={members}
             isAdmin={isAdmin}
             entries={entriesByTask[task.id] ?? []}
+            currentUserId={currentUserId}
+            activeTimer={activeTimer}
           />
         ))}
       </tbody>

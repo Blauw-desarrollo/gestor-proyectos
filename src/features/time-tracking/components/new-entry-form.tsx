@@ -23,7 +23,7 @@ export function NewEntryForm({ tasks }: { tasks: AssignableTask[] }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+        className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90"
       >
         + Imputar horas
       </button>
@@ -48,7 +48,7 @@ export function NewEntryForm({ tasks }: { tasks: AssignableTask[] }) {
       <select
         name="task_id"
         required
-        className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+        className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
       >
         {tasks.map((task) => (
           <option key={task.id} value={task.id}>
@@ -64,7 +64,7 @@ export function NewEntryForm({ tasks }: { tasks: AssignableTask[] }) {
         step="0.5"
         placeholder="Horas"
         required
-        className="w-24 rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+        className="w-24 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
       />
       <input
         name="entry_date"
@@ -72,17 +72,17 @@ export function NewEntryForm({ tasks }: { tasks: AssignableTask[] }) {
         defaultValue={today}
         max={today}
         required
-        className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+        className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
       />
       <input
         name="notes"
         placeholder="Notas (opcional)"
-        className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+        className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+        className="rounded-md bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         Guardar
       </button>

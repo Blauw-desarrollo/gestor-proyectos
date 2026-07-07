@@ -23,7 +23,7 @@ export default async function HorasPage({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-foreground">Mis horas</h1>
+        <h1 className="text-xl font-semibold text-foreground">Horas</h1>
         <NewEntryForm tasks={tasks} />
       </div>
       <WeekNav start={start} end={end} reference={reference} />
