@@ -1,12 +1,12 @@
 import type { Database } from "@/types/database";
 import type {
   getMyEntriesForWeek,
-  getMyAssignableTasks,
+  getLoggableTasks,
   getActiveTimer,
 } from "./queries";
 
 export type MyTimeEntry = Awaited<ReturnType<typeof getMyEntriesForWeek>>[number];
-export type AssignableTask = Awaited<ReturnType<typeof getMyAssignableTasks>>[number];
+export type LoggableTask = Awaited<ReturnType<typeof getLoggableTasks>>[number];
 export type ActiveTimer = Awaited<ReturnType<typeof getActiveTimer>>;
 
 export type TaskTimeEntry = Pick<

@@ -1,4 +1,4 @@
-import { getMyEntriesForWeek, getMyAssignableTasks } from "@/features/time-tracking/queries";
+import { getMyEntriesForWeek, getLoggableTasks } from "@/features/time-tracking/queries";
 import { getWeekRange } from "@/features/time-tracking/date";
 import { NewEntryForm } from "@/features/time-tracking/components/new-entry-form";
 import { WeekCalendar } from "@/features/time-tracking/components/week-calendar";
@@ -14,7 +14,7 @@ export default async function HorasPage({
 
   const [entries, tasks] = await Promise.all([
     getMyEntriesForWeek(reference),
-    getMyAssignableTasks(),
+    getLoggableTasks(),
   ]);
 
   const { start, end } = getWeekRange(reference);

@@ -11,11 +11,11 @@ export default async function AppLayout({
   const member = await getCurrentMember();
 
   return (
-    <div className="flex min-h-full flex-1 bg-background">
-      <aside className="flex w-56 flex-col justify-between border-r border-border bg-surface px-4 py-6">
+    <div className="flex min-h-full flex-1 gap-4 p-4">
+      <aside className="flex w-56 flex-col justify-between rounded-2xl border border-border bg-surface/70 px-4 py-6 shadow-2xl backdrop-blur-xl">
         <div className="flex flex-col gap-8">
           <Image
-            src="/brand/blauw-labs-logo.svg"
+            src="/brand/blauw-labs-logo-light.svg"
             alt="Blauw Labs"
             width={140}
             height={36}
@@ -29,7 +29,7 @@ export default async function AppLayout({
           </span>
         </div>
       </aside>
-      <main className="flex-1 px-6 py-8">{children}</main>
+      <main className="flex-1 px-2 py-2">{children}</main>
     </div>
   );
 }

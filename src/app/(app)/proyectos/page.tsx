@@ -29,7 +29,7 @@ export default async function ProyectosPage({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 rounded-md border border-border bg-surface p-1">
+        <div className="flex gap-1 rounded-md border border-border bg-surface/70 p-1 backdrop-blur-xl">
           <Link
             href={tabHref("active")}
             className={`rounded px-3 py-1.5 text-sm font-medium ${

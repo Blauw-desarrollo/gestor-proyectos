@@ -3,9 +3,9 @@
 import { useState, useTransition } from "react";
 import { createTimeEntry } from "../actions";
 import { toISODate } from "../date";
-import type { AssignableTask } from "../types";
+import type { LoggableTask } from "../types";
 
-export function NewEntryForm({ tasks }: { tasks: AssignableTask[] }) {
+export function NewEntryForm({ tasks }: { tasks: LoggableTask[] }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -14,7 +14,7 @@ export function NewEntryForm({ tasks }: { tasks: AssignableTask[] }) {
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-foreground/70">
-        No tienes tareas asignadas para imputar horas.
+        No hay tareas activas todavía. Crea una tarea en un proyecto primero.
       </p>
     );
   }

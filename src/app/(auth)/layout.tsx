@@ -8,7 +8,7 @@ export default function AuthLayout({
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 bg-background px-6 py-16">
       <Image
-        src="/brand/blauw-labs-logo.svg"
+        src="/brand/blauw-labs-logo-light.svg"
         alt="Blauw Labs"
         width={180}
         height={47}

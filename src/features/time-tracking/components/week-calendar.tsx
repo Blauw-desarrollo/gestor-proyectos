@@ -1,6 +1,6 @@
 import { EntryCard } from "./entry-card";
 import { addDays, toISODate } from "../date";
-import type { AssignableTask, MyTimeEntry } from "../types";
+import type { LoggableTask, MyTimeEntry } from "../types";
 
 const DAY_LABELS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
@@ -11,7 +11,7 @@ export function WeekCalendar({
 }: {
   start: Date;
   entries: MyTimeEntry[];
-  tasks: AssignableTask[];
+  tasks: LoggableTask[];
 }) {
   const entriesByDay: Record<string, MyTimeEntry[]> = {};
   for (const entry of entries) {
@@ -32,8 +32,8 @@ export function WeekCalendar({
         return (
           <div
             key={iso}
-            className={`flex flex-col gap-2 rounded-lg border p-2 ${
-              isToday ? "border-brand bg-brand/5" : "border-border bg-surface"
+            className={`flex flex-col gap-2 rounded-lg border p-2 shadow-xl backdrop-blur-xl ${
+              isToday ? "border-brand bg-brand/10" : "border-border bg-surface/70"
             }`}
           >
             <div className="flex items-center justify-between">

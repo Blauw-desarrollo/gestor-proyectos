@@ -49,7 +49,7 @@ export function TaskDetailModal({
       onClick={(event) => {
         if (event.target === dialogRef.current) onClose();
       }}
-      className="m-auto w-full max-w-lg rounded-lg border border-border bg-surface p-6 shadow-lg backdrop:bg-foreground/30"
+      className="m-auto w-full max-w-lg rounded-lg border border-border bg-surface/80 p-6 shadow-2xl backdrop-blur-xl backdrop:bg-black/60"
     >
       <div className="flex items-start justify-between">
         <h2 className="text-base font-semibold text-foreground">

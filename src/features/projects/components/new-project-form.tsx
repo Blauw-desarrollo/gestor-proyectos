@@ -22,7 +22,7 @@ export function NewProjectForm() {
         onClick={(event) => {
           if (event.target === dialogRef.current) dialogRef.current?.close();
         }}
-        className="m-auto w-full max-w-sm rounded-lg border border-border bg-surface p-6 shadow-lg backdrop:bg-foreground/30"
+        className="m-auto w-full max-w-sm rounded-lg border border-border bg-surface/80 p-6 shadow-2xl backdrop-blur-xl backdrop:bg-black/60"
       >
         <h2 className="text-base font-semibold text-foreground">
           Nuevo proyecto

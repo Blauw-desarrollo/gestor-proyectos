@@ -3,14 +3,14 @@
 import { useState, useTransition } from "react";
 import { deleteTimeEntry, updateTimeEntry } from "../actions";
 import { toISODate } from "../date";
-import type { AssignableTask, MyTimeEntry } from "../types";
+import type { LoggableTask, MyTimeEntry } from "../types";
 
 export function EntryCard({
   entry,
   tasks,
 }: {
   entry: MyTimeEntry;
-  tasks: AssignableTask[];
+  tasks: LoggableTask[];
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -23,15 +23,15 @@ export async function getMyEntriesForWeek(reference: Date) {
   return data;
 }
 
-export async function getMyAssignableTasks() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("No hay usuario autenticado");
-
+// Tareas sobre las que se puede imputar: cualquier tarea activa (no solo
+// las asignadas a mí), porque en un equipo pequeño cualquiera puede echar
+// horas en cualquier tarea. La entrada siempre queda asociada a quien la
+// crea (user_clerk_id), asignada o no.
+export async function getLoggableTasks() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("tasks")
     .select("id, title, project:projects(name)")
-    .eq("assignee_clerk_id", userId)
     .neq("status", "done")
     .is("deleted_at", null)
     .order("title", { ascending: true });
