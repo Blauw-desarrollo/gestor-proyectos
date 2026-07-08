@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { addComment, deleteComment, getTaskComments } from "../actions";
+import { useState, useTransition } from "react";
+import { addComment, deleteComment } from "../actions";
 import type { Member, TaskComment } from "../types";
 
 function formatDateTime(value: string): string {
@@ -16,35 +16,22 @@ function formatDateTime(value: string): string {
 export function TaskComments({
   taskId,
   projectId,
+  comments,
+  loading,
   members,
   currentUserId,
+  onReload,
 }: {
   taskId: string;
   projectId: string;
+  comments: TaskComment[];
+  loading: boolean;
   members: Member[];
   currentUserId: string | null;
+  onReload: () => void;
 }) {
-  const [comments, setComments] = useState<TaskComment[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-
-  const reload = () => {
-    getTaskComments(taskId).then(setComments);
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-    getTaskComments(taskId).then((data) => {
-      if (!cancelled) {
-        setComments(data);
-        setLoading(false);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [taskId]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -80,7 +67,7 @@ export function TaskComments({
                             comment.id
                           );
                           if (result?.error) alert(result.error);
-                          else reload();
+                          else onReload();
                         });
                       }}
                       disabled={isPending}
@@ -111,7 +98,7 @@ export function TaskComments({
                 `comment-form-${taskId}`
               ) as HTMLFormElement | null;
               form?.reset();
-              reload();
+              onReload();
             }
           });
         }}

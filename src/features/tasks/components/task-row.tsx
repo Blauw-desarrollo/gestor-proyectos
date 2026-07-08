@@ -43,7 +43,7 @@ export function TaskRow({
     <>
       <tr
         onClick={() => setOpen(true)}
-        className="cursor-pointer border-b border-border hover:bg-white/5"
+        className="cursor-pointer border-b border-border hover:bg-black/5"
       >
         <td className="px-4 py-2 text-sm font-medium text-foreground">
           {task.title}

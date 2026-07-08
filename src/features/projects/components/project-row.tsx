@@ -71,7 +71,7 @@ export function ProjectRow({
   }
 
   return (
-    <tr className="border-b border-border hover:bg-white/5">
+    <tr className="border-b border-border hover:bg-black/5">
       <td className="px-4 py-2 text-sm">
         <Link
           href={`/proyectos/${project.id}`}

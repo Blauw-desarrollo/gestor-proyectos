@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth/roles";
+import { getTaskEntries } from "@/features/time-tracking/actions";
 
 type ActionResult = { error?: string };
 
@@ -129,6 +130,19 @@ export async function getTaskComments(taskId: string) {
 
   if (error) throw error;
   return data;
+}
+
+// Une comentarios + horas (si isAdmin) en una sola llamada desde el
+// cliente al abrir el modal de tarea: antes eran dos "use server"
+// independientes, cada una con su propio viaje de ida y vuelta y su
+// propio token de Clerk; ahora comparten la misma invocación y el mismo
+// cliente Supabase cacheado por request.
+export async function getTaskModalData(taskId: string, includeEntries: boolean) {
+  const [comments, entries] = await Promise.all([
+    getTaskComments(taskId),
+    includeEntries ? getTaskEntries(taskId) : Promise.resolve([]),
+  ]);
+  return { comments, entries };
 }
 
 export async function addComment(

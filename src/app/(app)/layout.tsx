@@ -15,7 +15,7 @@ export default async function AppLayout({
       <aside className="flex w-56 flex-col justify-between rounded-2xl border border-border bg-surface/70 px-4 py-6 shadow-2xl backdrop-blur-xl">
         <div className="flex flex-col gap-8">
           <Image
-            src="/brand/blauw-labs-logo-light.svg"
+            src="/brand/blauw-labs-logo.svg"
             alt="Blauw Labs"
             width={140}
             height={36}

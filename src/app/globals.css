@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #423a2a;
-  --foreground: #f5f0e4;
+  --background: #efe9d8;
+  --foreground: #2b2419;
   --color-brand: #003ce5;
-  --color-surface: #4f4633;
-  --color-border: #6b5d43;
+  --color-surface: #fbf8f0;
+  --color-border: #ddd2b4;
 }
 
 @theme inline {
@@ -19,8 +19,8 @@
 
 body {
   background:
-    radial-gradient(ellipse 1100px 650px at 50% -8%, #59503a, transparent),
-    linear-gradient(180deg, #4a4130, #423a2a 60%);
+    radial-gradient(ellipse 1100px 650px at 50% -8%, #f8f4e6, transparent),
+    linear-gradient(180deg, #f3eedd, #efe9d8 60%);
   background-attachment: fixed;
   color: var(--foreground);
 }

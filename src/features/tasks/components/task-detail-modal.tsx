@@ -1,13 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { deleteTask, updateTask } from "../actions";
+import { deleteTask, getTaskModalData, updateTask } from "../actions";
 import { TaskFormFields } from "./task-form-fields";
 import { TaskComments } from "./task-comments";
 import { TaskEntriesPanel } from "@/features/time-tracking/components/task-entries-panel";
 import { AddHoursForm } from "@/features/time-tracking/components/add-hours-form";
-import { getTaskEntries } from "@/features/time-tracking/actions";
-import { TASK_STATUS_LABELS, type Member, type TaskStatus, type TaskWithHours } from "../types";
+import {
+  TASK_STATUS_LABELS,
+  type Member,
+  type TaskComment,
+  type TaskStatus,
+  type TaskWithHours,
+} from "../types";
 import type { TaskTimeEntry } from "@/features/time-tracking/types";
 
 export function TaskDetailModal({
@@ -30,16 +35,25 @@ export function TaskDetailModal({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [comments, setComments] = useState<TaskComment[]>([]);
   const [entries, setEntries] = useState<TaskTimeEntry[]>([]);
+  const [loadingDetails, setLoadingDetails] = useState(true);
 
-  const reloadEntries = () => {
-    if (isAdmin) getTaskEntries(task.id).then(setEntries);
+  const reload = () => {
+    getTaskModalData(task.id, isAdmin).then(({ comments, entries }) => {
+      setComments(comments);
+      setEntries(entries);
+      setLoadingDetails(false);
+    });
   };
 
   useEffect(() => {
     if (open) {
       dialogRef.current?.showModal();
-      reloadEntries();
+      // Resetea el spinner cada vez que se reabre (el modal no se desmonta).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoadingDetails(true);
+      reload();
     } else {
       dialogRef.current?.close();
     }
@@ -160,11 +174,7 @@ export function TaskDetailModal({
         <h3 className="mb-2 text-xs font-medium uppercase text-foreground/60">
           Imputar horas
         </h3>
-        <AddHoursForm
-          taskId={task.id}
-          projectId={projectId}
-          onLogged={reloadEntries}
-        />
+        <AddHoursForm taskId={task.id} projectId={projectId} onLogged={reload} />
       </div>
 
       {isAdmin && (
@@ -173,7 +183,11 @@ export function TaskDetailModal({
             Horas imputadas
           </h3>
           <div className="mt-2">
-            <TaskEntriesPanel entries={entries} members={members} />
+            {loadingDetails ? (
+              <p className="text-xs text-foreground/60">Cargando...</p>
+            ) : (
+              <TaskEntriesPanel entries={entries} members={members} />
+            )}
           </div>
         </div>
       )}
@@ -185,8 +199,11 @@ export function TaskDetailModal({
         <TaskComments
           taskId={task.id}
           projectId={projectId}
+          comments={comments}
+          loading={loadingDetails}
           members={members}
           currentUserId={currentUserId}
+          onReload={reload}
         />
       </div>
     </dialog>
