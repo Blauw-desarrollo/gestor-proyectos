@@ -2,7 +2,6 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getWeekRange, toISODate } from "./date";
-import type { TaskTimeEntry } from "./types";
 
 export async function getMyEntriesForWeek(reference: Date) {
   const { userId } = await auth();
@@ -53,26 +52,4 @@ export async function getActiveTimer() {
 
   if (error) throw error;
   return data;
-}
-
-export async function getEntriesGroupedByTask(
-  taskIds: string[]
-): Promise<Record<string, TaskTimeEntry[]>> {
-  if (taskIds.length === 0) return {};
-
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("time_entries")
-    .select("id, task_id, user_clerk_id, hours, entry_date, notes")
-    .in("task_id", taskIds)
-    .is("deleted_at", null)
-    .order("entry_date", { ascending: false });
-
-  if (error) throw error;
-
-  const grouped: Record<string, TaskTimeEntry[]> = {};
-  for (const entry of data ?? []) {
-    (grouped[entry.task_id] ??= []).push(entry);
-  }
-  return grouped;
 }

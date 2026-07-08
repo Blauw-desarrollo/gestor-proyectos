@@ -9,6 +9,23 @@ import { toISODate } from "./date";
 type ActionResult = { error?: string };
 type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
+// Lectura bajo demanda (se llama desde el modal de tarea al abrirse, no en
+// la carga de /proyectos/[projectId], para no consultar horas de tareas
+// que nadie va a mirar). Va en actions.ts porque solo un "use server"
+// puede invocarse desde un componente cliente.
+export async function getTaskEntries(taskId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("time_entries")
+    .select("id, task_id, user_clerk_id, hours, entry_date, notes")
+    .eq("task_id", taskId)
+    .is("deleted_at", null)
+    .order("entry_date", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 const entrySchema = z.object({
   task_id: z.string().trim().min(1, "Selecciona una tarea"),
   hours: z
@@ -37,7 +54,10 @@ function parseEntryForm(formData: FormData) {
   });
 }
 
-export async function createTimeEntry(formData: FormData): Promise<ActionResult> {
+export async function createTimeEntry(
+  formData: FormData,
+  projectId?: string
+): Promise<ActionResult> {
   const { userId } = await auth();
   if (!userId) return { error: "No hay usuario autenticado" };
 
@@ -58,6 +78,7 @@ export async function createTimeEntry(formData: FormData): Promise<ActionResult>
   if (error) return { error: error.message };
 
   revalidatePath("/horas");
+  if (projectId) revalidatePath(`/proyectos/${projectId}`);
   return {};
 }
 

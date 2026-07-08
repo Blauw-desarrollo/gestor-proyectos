@@ -40,12 +40,12 @@ export default function RootLayout({
       appearance={{
         variables: {
           colorPrimary: "#003ce5",
-          colorForeground: "#f2f2f0",
-          colorBackground: "#232327",
-          colorInput: "#2c2c31",
-          colorInputForeground: "#f2f2f0",
+          colorForeground: "#ede6d8",
+          colorBackground: "#2b2419",
+          colorInput: "#352c1e",
+          colorInputForeground: "#ede6d8",
           colorNeutral: "#ffffff",
-          colorMutedForeground: "#a0a0a8",
+          colorMutedForeground: "#a89d87",
           fontFamily: "var(--font-nunito)",
           borderRadius: "0.5rem",
         },

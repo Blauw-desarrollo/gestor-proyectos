@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { addComment, deleteComment } from "../actions";
+import { useEffect, useState, useTransition } from "react";
+import { addComment, deleteComment, getTaskComments } from "../actions";
 import type { Member, TaskComment } from "../types";
 
 function formatDateTime(value: string): string {
@@ -16,22 +16,41 @@ function formatDateTime(value: string): string {
 export function TaskComments({
   taskId,
   projectId,
-  comments,
   members,
   currentUserId,
 }: {
   taskId: string;
   projectId: string;
-  comments: TaskComment[];
   members: Member[];
   currentUserId: string | null;
 }) {
+  const [comments, setComments] = useState<TaskComment[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const reload = () => {
+    getTaskComments(taskId).then(setComments);
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    getTaskComments(taskId).then((data) => {
+      if (!cancelled) {
+        setComments(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [taskId]);
+
   return (
     <div className="flex flex-col gap-3">
-      {comments.length === 0 ? (
+      {loading ? (
+        <p className="text-xs text-foreground/60">Cargando...</p>
+      ) : comments.length === 0 ? (
         <p className="text-xs text-foreground/60">Sin comentarios todavía.</p>
       ) : (
         <ul className="flex flex-col gap-2">
@@ -57,6 +76,7 @@ export function TaskComments({
                       onClick={() => {
                         startTransition(async () => {
                           await deleteComment(projectId, comment.id);
+                          reload();
                         });
                       }}
                       disabled={isPending}
@@ -87,6 +107,7 @@ export function TaskComments({
                 `comment-form-${taskId}`
               ) as HTMLFormElement | null;
               form?.reset();
+              reload();
             }
           });
         }}

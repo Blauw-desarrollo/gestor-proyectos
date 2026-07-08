@@ -107,6 +107,22 @@ const commentSchema = z.object({
   body: z.string().trim().min(1, "Escribe algo antes de comentar").max(4000),
 });
 
+// Lectura bajo demanda (el modal de tarea la llama al abrirse). Va aquí
+// porque solo un "use server" puede invocarse desde un componente cliente;
+// evita precargar comentarios de tareas que nadie va a abrir.
+export async function getTaskComments(taskId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("task_comments")
+    .select("id, task_id, author_clerk_id, body, created_at")
+    .eq("task_id", taskId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function addComment(
   projectId: string,
   taskId: string,

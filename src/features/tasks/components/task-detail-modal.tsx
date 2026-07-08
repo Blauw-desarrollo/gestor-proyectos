@@ -5,7 +5,9 @@ import { deleteTask, updateTask } from "../actions";
 import { TaskFormFields } from "./task-form-fields";
 import { TaskComments } from "./task-comments";
 import { TaskEntriesPanel } from "@/features/time-tracking/components/task-entries-panel";
-import { TASK_STATUS_LABELS, type Member, type TaskComment, type TaskStatus, type TaskWithHours } from "../types";
+import { AddHoursForm } from "@/features/time-tracking/components/add-hours-form";
+import { getTaskEntries } from "@/features/time-tracking/actions";
+import { TASK_STATUS_LABELS, type Member, type TaskStatus, type TaskWithHours } from "../types";
 import type { TaskTimeEntry } from "@/features/time-tracking/types";
 
 export function TaskDetailModal({
@@ -15,8 +17,6 @@ export function TaskDetailModal({
   projectId,
   members,
   isAdmin,
-  entries,
-  comments,
   currentUserId,
 }: {
   open: boolean;
@@ -25,17 +25,25 @@ export function TaskDetailModal({
   projectId: string;
   members: Member[];
   isAdmin: boolean;
-  entries: TaskTimeEntry[];
-  comments: TaskComment[];
   currentUserId: string | null;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [entries, setEntries] = useState<TaskTimeEntry[]>([]);
+
+  const reloadEntries = () => {
+    if (isAdmin) getTaskEntries(task.id).then(setEntries);
+  };
 
   useEffect(() => {
-    if (open) dialogRef.current?.showModal();
-    else dialogRef.current?.close();
+    if (open) {
+      dialogRef.current?.showModal();
+      reloadEntries();
+    } else {
+      dialogRef.current?.close();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const assignee = members.find(
@@ -144,6 +152,17 @@ export function TaskDetailModal({
         </dl>
       )}
 
+      <div className="mt-4 border-t border-border pt-4">
+        <h3 className="mb-2 text-xs font-medium uppercase text-foreground/60">
+          Imputar horas
+        </h3>
+        <AddHoursForm
+          taskId={task.id}
+          projectId={projectId}
+          onLogged={reloadEntries}
+        />
+      </div>
+
       {isAdmin && (
         <div className="mt-4 border-t border-border pt-4">
           <h3 className="text-xs font-medium uppercase text-foreground/60">
@@ -162,7 +181,6 @@ export function TaskDetailModal({
         <TaskComments
           taskId={task.id}
           projectId={projectId}
-          comments={comments}
           members={members}
           currentUserId={currentUserId}
         />

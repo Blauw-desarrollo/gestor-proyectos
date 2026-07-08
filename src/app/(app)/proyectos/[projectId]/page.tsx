@@ -1,15 +1,8 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { getProjectById } from "@/features/projects/queries";
-import {
-  getProjectTasks,
-  getMembers,
-  getCommentsGroupedByTask,
-} from "@/features/tasks/queries";
-import {
-  getEntriesGroupedByTask,
-  getActiveTimer,
-} from "@/features/time-tracking/queries";
+import { getProjectTasks, getMembers } from "@/features/tasks/queries";
+import { getActiveTimer } from "@/features/time-tracking/queries";
 import { TasksTable } from "@/features/tasks/components/tasks-table";
 import { NewTaskForm } from "@/features/tasks/components/new-task-form";
 import { TASK_STATUS_LABELS, type TaskStatus } from "@/features/tasks/types";
@@ -36,12 +29,6 @@ export default async function ProyectoDetallePage({
     getMembers(),
     auth(),
     getActiveTimer(),
-  ]);
-
-  const taskIds = tasks.map((task) => task.id);
-  const [entriesByTask, commentsByTask] = await Promise.all([
-    admin ? getEntriesGroupedByTask(taskIds) : Promise.resolve({}),
-    getCommentsGroupedByTask(taskIds),
   ]);
 
   return (
@@ -86,8 +73,6 @@ export default async function ProyectoDetallePage({
         projectId={projectId}
         members={members}
         isAdmin={admin}
-        entriesByTask={entriesByTask}
-        commentsByTask={commentsByTask}
         currentUserId={userId}
         activeTimer={activeTimer}
       />

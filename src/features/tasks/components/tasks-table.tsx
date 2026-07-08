@@ -1,14 +1,12 @@
 import { TaskRow } from "./task-row";
-import type { Member, TaskComment, TaskWithHours } from "../types";
-import type { ActiveTimer, TaskTimeEntry } from "@/features/time-tracking/types";
+import type { Member, TaskWithHours } from "../types";
+import type { ActiveTimer } from "@/features/time-tracking/types";
 
 export function TasksTable({
   tasks,
   projectId,
   members,
   isAdmin,
-  entriesByTask,
-  commentsByTask,
   currentUserId,
   activeTimer,
 }: {
@@ -16,8 +14,6 @@ export function TasksTable({
   projectId: string;
   members: Member[];
   isAdmin: boolean;
-  entriesByTask: Record<string, TaskTimeEntry[]>;
-  commentsByTask: Record<string, TaskComment[]>;
   currentUserId: string | null;
   activeTimer: ActiveTimer;
 }) {
@@ -51,8 +47,6 @@ export function TasksTable({
             projectId={projectId}
             members={members}
             isAdmin={isAdmin}
-            entries={entriesByTask[task.id] ?? []}
-            comments={commentsByTask[task.id] ?? []}
             currentUserId={currentUserId}
             activeTimer={activeTimer}
           />

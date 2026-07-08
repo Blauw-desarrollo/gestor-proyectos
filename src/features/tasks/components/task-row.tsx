@@ -5,15 +5,11 @@ import { TaskDetailModal } from "./task-detail-modal";
 import {
   TASK_STATUS_LABELS,
   type Member,
-  type TaskComment,
   type TaskStatus,
   type TaskWithHours,
 } from "../types";
 import { TimerControl } from "@/features/time-tracking/components/timer-control";
-import type {
-  ActiveTimer,
-  TaskTimeEntry,
-} from "@/features/time-tracking/types";
+import type { ActiveTimer } from "@/features/time-tracking/types";
 
 function isOverdue(dueDate: string | null, status: string): boolean {
   if (!dueDate || status === "done") return false;
@@ -25,8 +21,6 @@ export function TaskRow({
   projectId,
   members,
   isAdmin,
-  entries,
-  comments,
   currentUserId,
   activeTimer,
 }: {
@@ -34,8 +28,6 @@ export function TaskRow({
   projectId: string;
   members: Member[];
   isAdmin: boolean;
-  entries: TaskTimeEntry[];
-  comments: TaskComment[];
   currentUserId: string | null;
   activeTimer: ActiveTimer;
 }) {
@@ -104,8 +96,6 @@ export function TaskRow({
         projectId={projectId}
         members={members}
         isAdmin={isAdmin}
-        entries={entries}
-        comments={comments}
         currentUserId={currentUserId}
       />
     </>
