@@ -129,7 +129,8 @@ export function EntryCard({
           onClick={() => {
             if (confirm("¿Eliminar esta entrada?")) {
               startTransition(async () => {
-                await deleteTimeEntry(entry.id);
+                const result = await deleteTimeEntry(entry.id);
+                if (result?.error) alert(result.error);
               });
             }
           }}

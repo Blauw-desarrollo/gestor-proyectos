@@ -96,7 +96,8 @@ export function ProjectRow({
               onClick={() => {
                 if (confirm(`¿Archivar "${project.name}"?`)) {
                   startTransition(async () => {
-                    await archiveProject(project.id);
+                    const result = await archiveProject(project.id);
+                    if (result?.error) alert(result.error);
                   });
                 }
               }}
@@ -109,7 +110,8 @@ export function ProjectRow({
             <button
               onClick={() => {
                 startTransition(async () => {
-                  await unarchiveProject(project.id);
+                  const result = await unarchiveProject(project.id);
+                  if (result?.error) alert(result.error);
                 });
               }}
               disabled={isPending}
@@ -126,7 +128,8 @@ export function ProjectRow({
                 )
               ) {
                 startTransition(async () => {
-                  await deleteProject(project.id);
+                  const result = await deleteProject(project.id);
+                  if (result?.error) alert(result.error);
                 });
               }
             }}

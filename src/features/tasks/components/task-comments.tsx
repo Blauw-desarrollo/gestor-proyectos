@@ -75,8 +75,12 @@ export function TaskComments({
                     <button
                       onClick={() => {
                         startTransition(async () => {
-                          await deleteComment(projectId, comment.id);
-                          reload();
+                          const result = await deleteComment(
+                            projectId,
+                            comment.id
+                          );
+                          if (result?.error) alert(result.error);
+                          else reload();
                         });
                       }}
                       disabled={isPending}

@@ -43,7 +43,8 @@ export function TimerControl({
         <button
           onClick={() => {
             startTransition(async () => {
-              await stopTimer(projectId);
+              const result = await stopTimer(projectId);
+              if (result?.error) alert(result.error);
             });
           }}
           disabled={isPending}
@@ -59,7 +60,8 @@ export function TimerControl({
     <button
       onClick={() => {
         startTransition(async () => {
-          await startTimer(taskId, projectId);
+          const result = await startTimer(taskId, projectId);
+          if (result?.error) alert(result.error);
         });
       }}
       disabled={isPending}

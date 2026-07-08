@@ -52,12 +52,16 @@ export async function updateProject(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("projects")
     .update({ name: parsed.data.name })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No se ha podido editar el proyecto (¿ya no existe?)" };
+  }
 
   revalidatePath("/proyectos");
   revalidatePath(`/proyectos/${id}`);
@@ -70,12 +74,16 @@ export async function archiveProject(id: string): Promise<ActionResult> {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("projects")
     .update({ status: "archived" })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No se ha podido archivar el proyecto (¿ya no existe?)" };
+  }
 
   revalidatePath("/proyectos");
   return {};
@@ -87,12 +95,16 @@ export async function unarchiveProject(id: string): Promise<ActionResult> {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("projects")
     .update({ status: "active" })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No se ha podido reactivar el proyecto (¿ya no existe?)" };
+  }
 
   revalidatePath("/proyectos");
   return {};
@@ -104,12 +116,16 @@ export async function deleteProject(id: string): Promise<ActionResult> {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("projects")
     .update({ deleted_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No se ha podido eliminar el proyecto (¿ya no existe?)" };
+  }
 
   revalidatePath("/proyectos");
   return {};

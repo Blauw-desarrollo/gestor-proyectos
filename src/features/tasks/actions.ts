@@ -72,12 +72,16 @@ export async function updateTask(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("tasks")
     .update(parsed.data)
-    .eq("id", taskId);
+    .eq("id", taskId)
+    .select();
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No se ha podido editar la tarea (¿ya no existe?)" };
+  }
 
   revalidatePath(`/proyectos/${projectId}`);
   return {};
@@ -92,12 +96,16 @@ export async function deleteTask(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("tasks")
     .update({ deleted_at: new Date().toISOString() })
-    .eq("id", taskId);
+    .eq("id", taskId)
+    .select();
 
   if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No se ha podido eliminar la tarea (¿ya no existe?)" };
+  }
 
   revalidatePath(`/proyectos/${projectId}`);
   return {};

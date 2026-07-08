@@ -104,8 +104,12 @@ export function TaskDetailModal({
               onClick={() => {
                 if (confirm(`¿Eliminar la tarea "${task.title}"?`)) {
                   startTransition(async () => {
-                    await deleteTask(projectId, task.id);
-                    onClose();
+                    const result = await deleteTask(projectId, task.id);
+                    if (result?.error) {
+                      setError(result.error);
+                    } else {
+                      onClose();
+                    }
                   });
                 }
               }}

@@ -14,7 +14,8 @@ export function NewEntryForm({ tasks }: { tasks: LoggableTask[] }) {
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-foreground/70">
-        No hay tareas activas todavía. Crea una tarea en un proyecto primero.
+        No hay tareas en progreso ahora mismo. Pon una tarea en progreso
+        desde el proyecto para poder imputarle horas aquí.
       </p>
     );
   }

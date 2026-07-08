@@ -22,16 +22,17 @@ export async function getMyEntriesForWeek(reference: Date) {
   return data;
 }
 
-// Tareas sobre las que se puede imputar: cualquier tarea activa (no solo
-// las asignadas a mí), porque en un equipo pequeño cualquiera puede echar
-// horas en cualquier tarea. La entrada siempre queda asociada a quien la
-// crea (user_clerk_id), asignada o no.
+// Tareas sobre las que se puede imputar desde /horas: solo las que están
+// "en progreso" (no "por hacer" ni "hecho"), y no limitado a las
+// asignadas a mí, porque en un equipo pequeño cualquiera puede echar
+// horas en cualquier tarea activa. La entrada siempre queda asociada a
+// quien la crea (user_clerk_id), asignada o no.
 export async function getLoggableTasks() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("tasks")
     .select("id, title, project:projects(name)")
-    .neq("status", "done")
+    .eq("status", "in_progress")
     .is("deleted_at", null)
     .order("title", { ascending: true });
 
