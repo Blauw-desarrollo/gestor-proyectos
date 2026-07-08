@@ -4,6 +4,7 @@ import { z } from "zod";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { friendlyDbError } from "@/lib/errors";
 import { toISODate } from "./date";
 
 type ActionResult = { error?: string };
@@ -75,7 +76,7 @@ export async function createTimeEntry(
     notes: parsed.data.notes ?? null,
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
 
   revalidatePath("/horas");
   if (projectId) revalidatePath(`/proyectos/${projectId}`);
@@ -107,7 +108,7 @@ export async function updateTimeEntry(
     .eq("user_clerk_id", userId)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No tienes permiso para editar esta entrada" };
   }
@@ -131,13 +132,13 @@ async function logElapsedAndDelete(
     entry_date: toISODate(new Date()),
     notes: "Cronómetro",
   });
-  if (insertError) return { error: insertError.message };
+  if (insertError) return { error: friendlyDbError(insertError.message) };
 
   const { error: deleteError } = await supabase
     .from("active_timers")
     .delete()
     .eq("id", timer.id);
-  if (deleteError) return { error: deleteError.message };
+  if (deleteError) return { error: friendlyDbError(deleteError.message) };
 
   return {};
 }
@@ -157,7 +158,7 @@ export async function startTimer(
     .eq("user_clerk_id", userId)
     .maybeSingle();
 
-  if (existingError) return { error: existingError.message };
+  if (existingError) return { error: friendlyDbError(existingError.message) };
 
   if (existing) {
     if (existing.task_id === taskId) return {};
@@ -169,7 +170,7 @@ export async function startTimer(
     .from("active_timers")
     .insert({ task_id: taskId, user_clerk_id: userId });
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
 
   revalidatePath("/horas");
   if (projectId) revalidatePath(`/proyectos/${projectId}`);
@@ -187,7 +188,7 @@ export async function stopTimer(projectId?: string): Promise<ActionResult> {
     .eq("user_clerk_id", userId)
     .maybeSingle();
 
-  if (existingError) return { error: existingError.message };
+  if (existingError) return { error: friendlyDbError(existingError.message) };
   if (!existing) return { error: "No hay ningún cronómetro en marcha" };
 
   const result = await logElapsedAndDelete(supabase, existing, userId);
@@ -210,7 +211,7 @@ export async function deleteTimeEntry(id: string): Promise<ActionResult> {
     .eq("user_clerk_id", userId)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No tienes permiso para eliminar esta entrada" };
   }

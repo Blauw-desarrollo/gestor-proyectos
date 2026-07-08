@@ -5,17 +5,18 @@ Gestor de proyectos para equipos de desarrollo. Fase actual: imputación de hora
 estimadas y reales a tareas. Stack: Next.js 16 (App Router) + React 19 + TypeScript
 + Clerk (auth) + Supabase (BD) + Tailwind v4. Deploy en Vercel.
 
-Identidad de marca: Blauw Labs. Tema oscuro con glassmorphism (fondo `#17171a`
-con degradado radial, tarjetas `surface` translúcidas con `backdrop-blur`),
-azul de marca `#003CE5` (fijo, no cambia con el tema), texto casi blanco
-`#F2F2F0`. Logo en dos variantes: `blauw-labs-logo.svg` (texto oscuro, para
-fondos claros) y `blauw-labs-logo-light.svg` (texto claro, para fondos
-oscuros — la que se usa en la app). Assets en `public/brand/` (uso en la app)
-y `docs/brand/` (referencia, no servido públicamente). Tokens de color en
-`src/app/globals.css` (`@theme inline`): `background`, `foreground`, `brand`,
-`surface`, `border`. Los contenedores "de cristal" (tablas, modales, sidebar)
-usan `bg-surface/70` o `/80` + `backdrop-blur-xl`; los inputs y botones
-sólidos usan `bg-surface` sin opacidad.
+Identidad de marca: Blauw Labs. Tema claro con glassmorphism (fondo beige
+`#EFE9D8` con degradado radial suave, tarjetas `surface` casi blancas
+translúcidas con `backdrop-blur`), azul de marca `#003CE5` (fijo), texto
+oscuro `#2B2419`. Logo en dos variantes: `blauw-labs-logo.svg` (texto oscuro,
+la que se usa en la app sobre el fondo claro) y `blauw-labs-logo-light.svg`
+(texto claro, por si se necesita algún fondo oscuro puntual). Assets en
+`public/brand/` (uso en la app) y `docs/brand/` (referencia, no servido
+públicamente). Tokens de color en `src/app/globals.css` (`@theme inline`):
+`background`, `foreground`, `brand`, `surface`, `border`. Los contenedores
+"de cristal" (tablas, modales, sidebar) usan `bg-surface/70` o `/80` +
+`backdrop-blur-xl`; los inputs y botones sólidos usan `bg-surface` sin
+opacidad.
 
 ## Reglas NO negociables
 

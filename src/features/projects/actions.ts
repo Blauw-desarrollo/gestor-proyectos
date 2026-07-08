@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth/roles";
+import { friendlyDbError } from "@/lib/errors";
 
 type ActionResult = { error?: string };
 
@@ -32,7 +33,7 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
     .from("projects")
     .insert({ name: parsed.data.name, created_by: userId });
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
 
   revalidatePath("/proyectos");
   return {};
@@ -58,7 +59,7 @@ export async function updateProject(
     .eq("id", id)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No se ha podido editar el proyecto (¿ya no existe?)" };
   }
@@ -80,7 +81,7 @@ export async function archiveProject(id: string): Promise<ActionResult> {
     .eq("id", id)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No se ha podido archivar el proyecto (¿ya no existe?)" };
   }
@@ -101,7 +102,7 @@ export async function unarchiveProject(id: string): Promise<ActionResult> {
     .eq("id", id)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No se ha podido reactivar el proyecto (¿ya no existe?)" };
   }
@@ -122,7 +123,7 @@ export async function deleteProject(id: string): Promise<ActionResult> {
     .eq("id", id)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No se ha podido eliminar el proyecto (¿ya no existe?)" };
   }

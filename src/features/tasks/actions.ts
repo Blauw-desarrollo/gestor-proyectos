@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth/roles";
+import { friendlyDbError } from "@/lib/errors";
 import { getTaskEntries } from "@/features/time-tracking/actions";
 
 type ActionResult = { error?: string };
@@ -52,7 +53,7 @@ export async function createTask(
     .from("tasks")
     .insert({ project_id: projectId, ...parsed.data });
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
 
   revalidatePath(`/proyectos/${projectId}`);
   return {};
@@ -79,7 +80,7 @@ export async function updateTask(
     .eq("id", taskId)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No se ha podido editar la tarea (¿ya no existe?)" };
   }
@@ -103,7 +104,7 @@ export async function deleteTask(
     .eq("id", taskId)
     .select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No se ha podido eliminar la tarea (¿ya no existe?)" };
   }
@@ -165,7 +166,7 @@ export async function addComment(
     body: parsed.data.body,
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
 
   revalidatePath(`/proyectos/${projectId}`);
   return {};
@@ -189,7 +190,7 @@ export async function deleteComment(
 
   const { data, error } = await query.select();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyDbError(error.message) };
   if (!data || data.length === 0) {
     return { error: "No tienes permiso para borrar este comentario" };
   }

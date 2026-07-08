@@ -12,12 +12,21 @@ export const createSupabaseServerClient = cache(async () => {
   const { getToken } = await auth();
   const token = await getToken({ template: "supabase" });
 
+  // Si no hay token, NUNCA seguir en silencio: eso manda la petición como
+  // anónima y Supabase la rechaza con un críptico "row-level security
+  // policy" en vez de decir claramente que falló la autenticación.
+  if (!token) {
+    throw new Error(
+      "No se pudo verificar tu sesión con Supabase. Recarga la página e inténtalo de nuevo."
+    );
+  }
+
   return createClient<Database>(
     requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
     requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
     {
       global: {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       },
     }
   );
