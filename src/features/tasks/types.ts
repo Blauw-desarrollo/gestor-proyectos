@@ -17,8 +17,19 @@ type TaskRow = Database["public"]["Tables"]["tasks"]["Row"];
 
 export type TaskWithHours = Pick<
   TaskRow,
-  "id" | "title" | "status" | "assignee_clerk_id" | "estimated_hours" | "created_at"
+  | "id"
+  | "title"
+  | "status"
+  | "assignee_clerk_id"
+  | "estimated_hours"
+  | "due_date"
+  | "created_at"
 > & {
   actual_hours: number;
   deviation_hours: number;
 };
+
+export type TaskComment = Pick<
+  Database["public"]["Tables"]["task_comments"]["Row"],
+  "id" | "task_id" | "author_clerk_id" | "body" | "created_at"
+>;

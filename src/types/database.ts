@@ -101,12 +101,55 @@ export type Database = {
         }
         Relationships: []
       }
+      task_comments: {
+        Row: {
+          author_clerk_id: string
+          body: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          task_id: string
+        }
+        Insert: {
+          author_clerk_id: string
+          body: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          task_id: string
+        }
+        Update: {
+          author_clerk_id?: string
+          body?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "task_hours_summary"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assignee_clerk_id: string | null
           created_at: string
           deleted_at: string | null
           description: string | null
+          due_date: string | null
           estimated_hours: number | null
           id: string
           project_id: string
@@ -118,6 +161,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          due_date?: string | null
           estimated_hours?: number | null
           id?: string
           project_id: string
@@ -129,6 +173,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          due_date?: string | null
           estimated_hours?: number | null
           id?: string
           project_id?: string

@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { archiveProject, updateProject } from "../actions";
+import {
+  archiveProject,
+  deleteProject,
+  unarchiveProject,
+  updateProject,
+} from "../actions";
 import type { Project } from "../types";
 
 export function ProjectRow({
@@ -86,18 +91,49 @@ export function ProjectRow({
           >
             Editar
           </button>
+          {project.status === "active" ? (
+            <button
+              onClick={() => {
+                if (confirm(`¿Archivar "${project.name}"?`)) {
+                  startTransition(async () => {
+                    await archiveProject(project.id);
+                  });
+                }
+              }}
+              disabled={isPending}
+              className="mr-3 text-foreground/70 hover:text-brand"
+            >
+              Archivar
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                startTransition(async () => {
+                  await unarchiveProject(project.id);
+                });
+              }}
+              disabled={isPending}
+              className="mr-3 text-foreground/70 hover:text-brand"
+            >
+              Reactivar
+            </button>
+          )}
           <button
             onClick={() => {
-              if (confirm(`¿Archivar "${project.name}"?`)) {
+              if (
+                confirm(
+                  `¿Eliminar "${project.name}"? Sus tareas y horas dejarán de verse en la app.`
+                )
+              ) {
                 startTransition(async () => {
-                  await archiveProject(project.id);
+                  await deleteProject(project.id);
                 });
               }
             }}
             disabled={isPending}
             className="text-foreground/70 hover:text-red-600"
           >
-            Archivar
+            Eliminar
           </button>
         </td>
       )}

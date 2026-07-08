@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth/roles";
@@ -12,11 +13,13 @@ const taskSchema = z.object({
   status: z.enum(["todo", "in_progress", "done"]),
   assignee_clerk_id: z.string().trim().min(1).nullable(),
   estimated_hours: z.number().min(0).nullable(),
+  due_date: z.string().min(1).nullable(),
 });
 
 function parseTaskForm(formData: FormData) {
   const assignee = formData.get("assignee_clerk_id");
   const hoursRaw = formData.get("estimated_hours");
+  const dueDateRaw = formData.get("due_date");
 
   return taskSchema.safeParse({
     title: formData.get("title"),
@@ -25,6 +28,8 @@ function parseTaskForm(formData: FormData) {
       assignee && String(assignee).trim() !== "" ? String(assignee) : null,
     estimated_hours:
       hoursRaw && String(hoursRaw).trim() !== "" ? Number(hoursRaw) : null,
+    due_date:
+      dueDateRaw && String(dueDateRaw).trim() !== "" ? String(dueDateRaw) : null,
   });
 }
 
@@ -93,6 +98,63 @@ export async function deleteTask(
     .eq("id", taskId);
 
   if (error) return { error: error.message };
+
+  revalidatePath(`/proyectos/${projectId}`);
+  return {};
+}
+
+const commentSchema = z.object({
+  body: z.string().trim().min(1, "Escribe algo antes de comentar").max(4000),
+});
+
+export async function addComment(
+  projectId: string,
+  taskId: string,
+  formData: FormData
+): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { error: "No hay usuario autenticado" };
+
+  const parsed = commentSchema.safeParse({ body: formData.get("body") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("task_comments").insert({
+    task_id: taskId,
+    author_clerk_id: userId,
+    body: parsed.data.body,
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath(`/proyectos/${projectId}`);
+  return {};
+}
+
+export async function deleteComment(
+  projectId: string,
+  commentId: string
+): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { error: "No hay usuario autenticado" };
+
+  const admin = await isAdmin();
+  const supabase = await createSupabaseServerClient();
+  let query = supabase
+    .from("task_comments")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", commentId);
+
+  if (!admin) query = query.eq("author_clerk_id", userId);
+
+  const { data, error } = await query.select();
+
+  if (error) return { error: error.message };
+  if (!data || data.length === 0) {
+    return { error: "No tienes permiso para borrar este comentario" };
+  }
 
   revalidatePath(`/proyectos/${projectId}`);
   return {};

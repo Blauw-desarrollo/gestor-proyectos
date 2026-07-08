@@ -10,7 +10,9 @@ export function ProjectsTable({
 }) {
   if (projects.length === 0) {
     return (
-      <p className="text-sm text-foreground/70">No hay proyectos activos.</p>
+      <p className="text-sm text-foreground/70">
+        No hay proyectos que coincidan.
+      </p>
     );
   }
 

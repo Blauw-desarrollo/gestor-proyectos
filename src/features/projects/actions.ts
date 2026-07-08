@@ -80,3 +80,37 @@ export async function archiveProject(id: string): Promise<ActionResult> {
   revalidatePath("/proyectos");
   return {};
 }
+
+export async function unarchiveProject(id: string): Promise<ActionResult> {
+  if (!(await isAdmin())) {
+    return { error: "No tienes permisos para reactivar proyectos" };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("projects")
+    .update({ status: "active" })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/proyectos");
+  return {};
+}
+
+export async function deleteProject(id: string): Promise<ActionResult> {
+  if (!(await isAdmin())) {
+    return { error: "No tienes permisos para eliminar proyectos" };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("projects")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/proyectos");
+  return {};
+}

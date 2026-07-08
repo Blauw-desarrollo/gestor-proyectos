@@ -34,6 +34,7 @@ Vincula usuarios de Clerk con su rol en la app.
 | status | text not null | 'todo' \| 'in_progress' \| 'done', default 'todo' |
 | assignee_clerk_id | text null | |
 | estimated_hours | numeric(6,2) null | estimación única a nivel de tarea |
+| due_date | date null | fecha límite |
 | created_at | timestamptz | |
 | deleted_at | timestamptz null | soft delete |
 
@@ -62,6 +63,17 @@ corriendo a la vez. Al pararlo, la app crea la fila correspondiente en
 | user_clerk_id | text unique not null | |
 | started_at | timestamptz not null | default now() |
 
+### task_comments
+Comentarios por tarea, visibles para cualquier member.
+| campo | tipo | notas |
+|---|---|---|
+| id | uuid pk | |
+| task_id | uuid fk → tasks | |
+| author_clerk_id | text not null | |
+| body | text not null | |
+| created_at | timestamptz not null | default now() |
+| deleted_at | timestamptz null | soft delete |
+
 ## Vistas
 
 ### task_hours_summary
@@ -73,6 +85,7 @@ Base para el informe de desviación por proyecto.
 - **projects / tasks**: lectura para todo member; escritura solo admin (fase 1).
 - **time_entries**: dev crea/edita/borra (soft) SOLO sus entradas; admin lee todas.
 - **active_timers**: cada usuario gestiona (insert/delete) SOLO su propio timer; admin lee todos.
+- **task_comments**: lectura para todo member; cada uno escribe solo como sí mismo; borra (soft) el autor o un admin.
 
 ## Decisiones
 - `estimated_hours` vive en `tasks` (se estima una vez); las horas reales son

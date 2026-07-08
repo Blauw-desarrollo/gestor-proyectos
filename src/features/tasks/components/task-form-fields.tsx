@@ -25,6 +25,7 @@ export function TaskFormFields({
     status: TaskStatus;
     assignee_clerk_id: string | null;
     estimated_hours: number | null;
+    due_date: string | null;
   };
 }) {
   return (
@@ -65,16 +66,26 @@ export function TaskFormFields({
           ))}
         </select>
       </Field>
-      <Field label="Horas est.">
-        <input
-          name="estimated_hours"
-          type="number"
-          min={0}
-          step="0.5"
-          defaultValue={defaults?.estimated_hours ?? undefined}
-          className="w-28 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
-        />
-      </Field>
+      <div className="flex gap-3">
+        <Field label="Horas est.">
+          <input
+            name="estimated_hours"
+            type="number"
+            min={0}
+            step="0.5"
+            defaultValue={defaults?.estimated_hours ?? undefined}
+            className="w-28 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+          />
+        </Field>
+        <Field label="Vencimiento">
+          <input
+            name="due_date"
+            type="date"
+            defaultValue={defaults?.due_date ?? undefined}
+            className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
+          />
+        </Field>
+      </div>
     </>
   );
 }

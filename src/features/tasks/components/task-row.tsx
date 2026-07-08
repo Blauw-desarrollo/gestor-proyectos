@@ -1,20 +1,24 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { deleteTask, updateTask } from "../actions";
-import { TaskFormFields } from "./task-form-fields";
+import { useState } from "react";
+import { TaskDetailModal } from "./task-detail-modal";
 import {
   TASK_STATUS_LABELS,
   type Member,
+  type TaskComment,
   type TaskStatus,
   type TaskWithHours,
 } from "../types";
-import { TaskEntriesPanel } from "@/features/time-tracking/components/task-entries-panel";
 import { TimerControl } from "@/features/time-tracking/components/timer-control";
 import type {
   ActiveTimer,
   TaskTimeEntry,
 } from "@/features/time-tracking/types";
+
+function isOverdue(dueDate: string | null, status: string): boolean {
+  if (!dueDate || status === "done") return false;
+  return dueDate < new Date().toISOString().slice(0, 10);
+}
 
 export function TaskRow({
   task,
@@ -22,6 +26,7 @@ export function TaskRow({
   members,
   isAdmin,
   entries,
+  comments,
   currentUserId,
   activeTimer,
 }: {
@@ -30,146 +35,79 @@ export function TaskRow({
   members: Member[];
   isAdmin: boolean;
   entries: TaskTimeEntry[];
+  comments: TaskComment[];
   currentUserId: string | null;
   activeTimer: ActiveTimer;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [showEntries, setShowEntries] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const columnCount = isAdmin ? 8 : 7;
-
-  if (isEditing) {
-    return (
-      <tr className="border-b border-border">
-        <td colSpan={columnCount} className="px-4 py-2">
-          <form
-            action={(formData) => {
-              startTransition(async () => {
-                const result = await updateTask(projectId, task.id, formData);
-                if (result?.error) {
-                  setError(result.error);
-                } else {
-                  setError(null);
-                  setIsEditing(false);
-                }
-              });
-            }}
-            className="flex flex-wrap items-end gap-2"
-          >
-            <TaskFormFields
-              members={members}
-              defaults={{
-                title: task.title,
-                status: task.status as TaskStatus,
-                assignee_clerk_id: task.assignee_clerk_id,
-                estimated_hours: task.estimated_hours,
-              }}
-            />
-            <button
-              type="submit"
-              disabled={isPending}
-              className="rounded-md bg-brand px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
-            >
-              Guardar
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setError(null);
-                setIsEditing(false);
-              }}
-              className="px-2 py-1.5 text-sm text-foreground/70 hover:text-foreground"
-            >
-              Cancelar
-            </button>
-            {error && <p className="w-full text-xs text-red-600">{error}</p>}
-          </form>
-        </td>
-      </tr>
-    );
-  }
+  const [open, setOpen] = useState(false);
 
   const assignee = members.find(
     (member) => member.clerk_user_id === task.assignee_clerk_id
   );
   const hasDeviation = task.deviation_hours > 0;
+  const overdue = isOverdue(task.due_date, task.status);
 
   return (
     <>
-    <tr className="border-b border-border hover:bg-background">
-      <td className="px-4 py-2 text-sm font-medium text-foreground">
-        {task.title}
-      </td>
-      <td className="px-4 py-2 text-sm text-foreground/70">
-        {TASK_STATUS_LABELS[task.status as keyof typeof TASK_STATUS_LABELS] ??
-          task.status}
-      </td>
-      <td className="px-4 py-2 text-sm text-foreground/70">
-        {assignee?.display_name ?? assignee?.clerk_user_id ?? "Sin asignar"}
-      </td>
-      <td className="px-4 py-2 text-sm text-foreground/70">
-        {task.estimated_hours ?? "—"}
-      </td>
-      <td className="px-4 py-2 text-sm text-foreground/70">
-        {task.actual_hours}
-      </td>
-      <td
-        className={`px-4 py-2 text-sm font-medium ${
-          hasDeviation ? "text-red-600" : "text-foreground/70"
-        }`}
+      <tr
+        onClick={() => setOpen(true)}
+        className="cursor-pointer border-b border-border hover:bg-background"
       >
-        {task.deviation_hours}
-      </td>
-      <td className="px-4 py-2 text-sm">
-        {task.assignee_clerk_id === currentUserId ? (
-          <TimerControl
-            taskId={task.id}
-            projectId={projectId}
-            activeTimer={activeTimer}
-          />
-        ) : (
-          <span className="text-foreground/40">—</span>
-        )}
-      </td>
-      {isAdmin && (
-        <td className="px-4 py-2 text-right text-sm">
-          <button
-            onClick={() => setShowEntries((value) => !value)}
-            className="mr-3 text-foreground/70 hover:text-brand"
-          >
-            {showEntries ? "Ocultar horas" : "Ver horas"}
-          </button>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="mr-3 text-foreground/70 hover:text-brand"
-          >
-            Editar
-          </button>
-          <button
-            onClick={() => {
-              if (confirm(`¿Eliminar la tarea "${task.title}"?`)) {
-                startTransition(async () => {
-                  await deleteTask(projectId, task.id);
-                });
-              }
-            }}
-            disabled={isPending}
-            className="text-foreground/70 hover:text-red-600"
-          >
-            Eliminar
-          </button>
+        <td className="px-4 py-2 text-sm font-medium text-foreground">
+          {task.title}
         </td>
-      )}
-    </tr>
-    {isAdmin && showEntries && (
-      <tr className="border-b border-border bg-background">
-        <td colSpan={columnCount} className="p-0">
-          <TaskEntriesPanel entries={entries} members={members} />
+        <td className="px-4 py-2 text-sm text-foreground/70">
+          {TASK_STATUS_LABELS[task.status as TaskStatus] ?? task.status}
+        </td>
+        <td className="px-4 py-2 text-sm text-foreground/70">
+          {assignee?.display_name ?? assignee?.clerk_user_id ?? "Sin asignar"}
+        </td>
+        <td
+          className={`px-4 py-2 text-sm ${
+            overdue ? "font-medium text-red-600" : "text-foreground/70"
+          }`}
+        >
+          {task.due_date ?? "—"}
+        </td>
+        <td className="px-4 py-2 text-sm text-foreground/70">
+          {task.estimated_hours ?? "—"}
+        </td>
+        <td className="px-4 py-2 text-sm text-foreground/70">
+          {task.actual_hours}
+        </td>
+        <td
+          className={`px-4 py-2 text-sm font-medium ${
+            hasDeviation ? "text-red-600" : "text-foreground/70"
+          }`}
+        >
+          {task.deviation_hours}
+        </td>
+        <td
+          className="px-4 py-2 text-sm"
+          onClick={(event) => event.stopPropagation()}
+        >
+          {task.assignee_clerk_id === currentUserId ? (
+            <TimerControl
+              taskId={task.id}
+              projectId={projectId}
+              activeTimer={activeTimer}
+            />
+          ) : (
+            <span className="text-foreground/40">—</span>
+          )}
         </td>
       </tr>
-    )}
+      <TaskDetailModal
+        open={open}
+        onClose={() => setOpen(false)}
+        task={task}
+        projectId={projectId}
+        members={members}
+        isAdmin={isAdmin}
+        entries={entries}
+        comments={comments}
+        currentUserId={currentUserId}
+      />
     </>
   );
 }

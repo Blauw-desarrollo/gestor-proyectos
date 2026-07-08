@@ -1,7 +1,7 @@
 import { getMyEntriesForWeek, getMyAssignableTasks } from "@/features/time-tracking/queries";
 import { getWeekRange } from "@/features/time-tracking/date";
 import { NewEntryForm } from "@/features/time-tracking/components/new-entry-form";
-import { WeeklyEntriesTable } from "@/features/time-tracking/components/weekly-entries-table";
+import { WeekCalendar } from "@/features/time-tracking/components/week-calendar";
 import { WeekNav } from "@/features/time-tracking/components/week-nav";
 
 export default async function HorasPage({
@@ -26,8 +26,13 @@ export default async function HorasPage({
         <h1 className="text-xl font-semibold text-foreground">Horas</h1>
         <NewEntryForm tasks={tasks} />
       </div>
-      <WeekNav start={start} end={end} reference={reference} />
-      <WeeklyEntriesTable entries={entries} tasks={tasks} total={total} />
+      <div className="flex items-center justify-between">
+        <WeekNav start={start} end={end} reference={reference} />
+        <span className="text-sm font-medium text-foreground">
+          Total: <span className="text-brand">{total}h</span>
+        </span>
+      </div>
+      <WeekCalendar start={start} entries={entries} tasks={tasks} />
     </div>
   );
 }
