@@ -54,8 +54,10 @@ export default async function ProyectosPage({
         <form className="flex items-center gap-2">
           <input type="hidden" name="status" value={activeTab} />
           <input
+            id="project-search"
             type="search"
             name="q"
+            autoComplete="off"
             defaultValue={q}
             placeholder="Buscar proyecto..."
             className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"

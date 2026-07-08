@@ -184,7 +184,7 @@ export function TaskDetailModal({
           </h3>
           <div className="mt-2">
             {loadingDetails ? (
-              <p className="text-xs text-foreground/60">Cargando...</p>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-brand" />
             ) : (
               <TaskEntriesPanel entries={entries} members={members} />
             )}

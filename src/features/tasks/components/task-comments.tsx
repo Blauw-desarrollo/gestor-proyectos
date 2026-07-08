@@ -36,7 +36,7 @@ export function TaskComments({
   return (
     <div className="flex flex-col gap-3">
       {loading ? (
-        <p className="text-xs text-foreground/60">Cargando...</p>
+        <span className="h-4 w-4 animate-spin self-center rounded-full border-2 border-border border-t-brand" />
       ) : comments.length === 0 ? (
         <p className="text-xs text-foreground/60">Sin comentarios todavía.</p>
       ) : (

@@ -1,10 +1,7 @@
 export default function Loading() {
   return (
     <div className="flex flex-1 items-center justify-center py-24">
-      <div className="flex items-center gap-3 text-sm text-foreground/60">
-        <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-brand" />
-        Cargando proyecto...
-      </div>
+      <span className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-brand" />
     </div>
   );
 }
